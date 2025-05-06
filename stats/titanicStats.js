@@ -102,20 +102,24 @@ function getAmountByGender (passengers) {
     childrenSurvived = 0, childrenNotSurvived = 0;
 
   obj.survived.forEach((pass) => {
-    if (pass.sex === 'male' && (pass.age >= 18 || pass.age === '')) {
+    if (pass.sex === 'male') {
       menSurvived++;
-    } else if (pass.sex === 'female' && (pass.age >= 18 || pass.age === '')) {
+    }
+    if (pass.sex === 'female') {
       womenSurvived++;
-    } else {
+    }
+    if (pass.age < 18 && pass.age !== '') {
       childrenSurvived++;
     }
   });
   obj.notSurvived.forEach((pass) => {
-    if (pass.sex === 'male' && (pass.age >= 18 || pass.age === '')) {
+    if (pass.sex === 'male') {
       menNotSurvived++;
-    } else if (pass.sex === 'female' && (pass.age >= 18 || pass.age === '')) {
+    }
+    if (pass.sex === 'female') {
       womenNotSurvived++;
-    } else {
+    }
+    if (pass.age < 18 && pass.age !== '') {
       childrenNotSurvived++;
     }
   });
