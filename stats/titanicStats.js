@@ -1,27 +1,56 @@
 import fs from 'fs';
+import readline from 'readline';
 
-fs.readFile('../train.csv', 'utf8', (err, data) => {
-  if (err) console.log(err);
-  else {
-    const passengers = data.split('\n');
-    const totalFares = (getTotalFares(passengers));
-    const firstClassFaresAvg = (getAvgByClasses(passengers)).firstTotal;
-    const secondClassFaresAvg = (getAvgByClasses(passengers)).secondTotal;
-    const thirdClassFaresAvg = (getAvgByClasses(passengers)).thirdTotal;
-    const survived = getSurvivedAndNotSurvived(passengers).survived.length;
-    const notSurvived = getSurvivedAndNotSurvived(passengers).notSurvived.length;
-    const survivedMen = getAmountByGender(passengers).menSurvived;
-    const surviveWomen = getAmountByGender(passengers).womenSurvived;
-    const survivedChildren = getAmountByGender(passengers).childrenSurvived;
-    const notSurvivedMen = getAmountByGender(passengers).menNotSurvived;
-    const notSurviveWomen = getAmountByGender(passengers).womenNotSurvived;
-    const notSurvivedChildren = getAmountByGender(passengers).childrenNotSurvived;
-
-
-    console.log(`Total fares: ${getTotalFares(passengers)}\nFist class average fares:${firstClassFaresAvg}\nSecond class average fares:${secondClassFaresAvg}\nThird class average fares:${thirdClassFaresAvg}\nSurvived: ${survived}\nNot survived: ${notSurvived}\nSurvived men: ${survivedMen}\nSurvived women: ${surviveWomen}\nSurvived children: ${survivedChildren}\nNot survived men: ${notSurvivedMen}\nNot survived women: ${notSurviveWomen}\nNot survived children: ${notSurvivedChildren}\n `);
-
-  }
+const titanicStream = fs.createReadStream('../train.csv', 'utf8');
+const reader = readline.createInterface({
+  input: titanicStream,
+  crlfDelay: Infinity
 });
+
+let passengers = [], totalFares, firstClassFaresAvg, secondClassFaresAvg,
+  thirdClassFaresAvg,
+  survived, notSurvived, survivedMen, survivedWomen, survivedChildren,
+  notSurvivedMen, notSurvivedWomen, notSurvivedChildren, isFirstLine = true;
+
+
+reader.on('line', (line) => {
+  if (isFirstLine) {
+    isFirstLine = false;
+    return;
+  }
+  passengers.push(line);
+  const avgByClasses = getAvgByClasses(passengers);
+  const amountByGender = getAmountByGender(passengers);
+
+  totalFares = (getTotalFares(passengers));
+  firstClassFaresAvg = avgByClasses.firstTotal;
+  secondClassFaresAvg = avgByClasses.secondTotal;
+  thirdClassFaresAvg = avgByClasses.thirdTotal;
+  survived = getSurvivedAndNotSurvived(passengers).survived.length;
+  notSurvived = getSurvivedAndNotSurvived(passengers).notSurvived.length;
+  survivedMen = amountByGender.menSurvived;
+  survivedWomen = amountByGender.womenSurvived;
+  survivedChildren = amountByGender.childrenSurvived;
+  notSurvivedMen = amountByGender.menNotSurvived;
+  notSurvivedWomen = amountByGender.womenNotSurvived;
+  notSurvivedChildren = amountByGender.childrenNotSurvived;
+});
+
+reader.on('close', () => {
+  console.log(`Total fares: ${totalFares}`);
+  console.log(`Fist class average fares:${firstClassFaresAvg}`);
+  console.log(`Second class average fares:${secondClassFaresAvg}`);
+  console.log(`Third class average fares:${thirdClassFaresAvg}`);
+  console.log(`Survived: ${survived}`);
+  console.log(`Not survived: ${notSurvived}`);
+  console.log(`Survived men: ${survivedMen}`);
+  console.log(`Survived women: ${survivedWomen}`);
+  console.log(`Survived children: ${survivedChildren}`);
+  console.log(`Not survived men: ${notSurvivedMen}`);
+  console.log(`Not survived women: ${notSurvivedWomen}`);
+  console.log(`Not survived children: ${notSurvivedChildren}`);
+});
+
 
 function getTotalFares (arr) {
   let total = 0;
